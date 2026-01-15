@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспекты - Платформа для учеников</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .admin-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        button {
+            background: #667eea;
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid transparent;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .note-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .note-card.expanded {
+            grid-column: 1 / -1;
+        }
+
+        .note-subject {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .note-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .note-author {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .note-preview {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-height: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-preview.full {
+            max-height: none;
+            overflow: visible;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .note-actions button {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .read-more-btn {
+            background: #667eea;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .admin-panel {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .admin-panel h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .admin-list {
+            list-style: none;
+        }
+
+        .admin-list li {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-list button {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>📚 Конспекты</h1>
+                <p style="color: #999; font-size: 14px;">Платформа для обмена конспектами между учениками</p>
+            </div>
+            <div id="adminBadge"></div>
+        </header>
+
+        <div class="tabs" id="tabsContainer">
+            <button class="tab-btn active" onclick="switchTab('browse')">📖 Просмотр конспектов</button>
+            <button class="tab-btn" onclick="switchTab('upload')">📝 Загрузить конспект</button>
+            <button class="tab-btn" onclick="switchTab('admin')" id="adminTabBtn" style="display: none;">⚙️ Администратор</button>
+            <button class="tab-btn" id="loginTabBtn" style="margin-left: auto;">👤 Вход</button>
+        </div>
+
+        <!-- Вкладка просмотра конспектов -->
+        <div id="browse" class="tab-content active">
+            <div class="stats" id="stats"></div>
+
+            <div class="filter-group">
+                <button class="filter-btn active" onclick="filterSubject('all')">Все предметы</button>
+                <button class="filter-btn" onclick="filterSubject('Математика')">Математика</button>
+                <button class="filter-btn" onclick="filterSubject('Русский')">Русский язык</button>
+                <button class="filter-btn" onclick="filterSubject('История')">История</button>
+                <button class="filter-btn" onclick="filterSubject('Биология')">Биология</button>
+                <button class="filter-btn" onclick="filterSubject('Физика')">Физика</button>
+                <button class="filter-btn" onclick="filterSubject('Химия')">Химия</button>
+                <button class="filter-btn" onclick="filterSubject('Английский')">Английский</button>
+                <button class="filter-btn" onclick="filterSubject('Другое')">Другое</button>
+            </div>
+
+            <div id="notesContainer" class="notes-grid"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>Конспектов нет</h3>
+                <p>Будьте первым, кто загрузит конспект по этому предмету!</p>
+            </div>
+        </div>
+
+        <!-- Вкладка загрузки конспекта -->
+        <div id="upload" class="tab-content">
+            <h2>Загрузить новый конспект</h2>
+            <div class="success-message" id="uploadSuccess">✓ Конспект успешно загружен!</div>
+            <div class="error-message" id="uploadError"></div>
+
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="subject">Предмет:</label>
+                    <select id="subject" required>
+                        <option value="">Выберите предмет</option>
+                        <option value="Математика">Математика</option>
+                        <option value="Русский">Русский язык</option>
+                        <option value="История">История</option>
+                        <option value="Биология">Биология</option>
+                        <option value="Физика">Физика</option>
+                        <option value="Химия">Химия</option>
+                        <option value="Английский">Английский язык</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="noteTitle">Название конспекта:</label>
+                    <input type="text" id="noteTitle" required placeholder="Например: Производные и их применение">
+                </div>
+
+                <div class="form-group">
+                    <label for="noteContent">Содержание конспекта:</label>
+                    <textarea id="noteContent" required placeholder="Введите текст конспекта..."></textarea>
+                </div>
+
+                <button type="submit">📤 Загрузить конспект</button>
+            </form>
+        </div>
+
+        <!-- Вкладка администратора -->
+        <div id="admin" class="tab-content">
+            <h2>🛡️ Панель администратора</h2>
+            <div id="adminPanel">
+                <div class="admin-panel">
+                    <h3>Управление администраторами</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Добавьте новых администраторов в систему.</p>
+                    <div class="form-group">
+                        <label for="newAdminUsername">Имя пользователя для админа:</label>
+                        <input type="text" id="newAdminUsername" placeholder="Введите имя пользователя">
+                    </div>
+                    <button onclick="makeAdmin()">➕ Сделать администратором</button>
+                </div>
+
+                <div class="admin-panel">
+                    <h3>Список администраторов</h3>
+                    <div id="adminsList"></div>
+                </div>
+
+                <div class="admin-panel">
+                    <h3>Управление конспектами</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Удаляйте конспекты, которые нарушают правила.</p>
+                    <div id="adminNotesContainer"></div>
+                </div>
+
+                <button onclick="logout()" style="background: #ff6b6b; margin-top: 20px; width: 100%;">🚪 Выйти из аккаунта</button>
+            </div>
+        </div>
+
+        <!-- Вкладка входа -->
+        <div id="login" class="tab-content">
+            <h2>👤 Вход в аккаунт</h2>
+            <div class="admin-panel">
+                <h3>Вход</h3>
+                <div class="form-group">
+                    <label for="loginUsername">Имя пользователя:</label>
+                    <input type="text" id="loginUsername" placeholder="Введите имя пользователя" onkeypress="if(event.key==='Enter') loginUser()">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль:</label>
+                    <input type="password" id="loginPassword" placeholder="Введите пароль" onkeypress="if(event.key==='Enter') loginUser()">
+                </div>
+                <button onclick="loginUser()" style="margin-bottom: 10px;">🔓 Войти</button>
+                <button onclick="showRegister()" style="background: #28a745;">✏️ Зарегистрироваться</button>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <div class="admin-panel">
+                    <h3>Регистрация</h3>
+                    <div class="form-group">
+                        <label for="regUsername">Имя пользователя:</label>
+                        <input type="text" id="regUsername" placeholder="Выберите имя пользователя" onkeypress="if(event.key==='Enter') registerUser()">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Пароль:</label>
+                        <input type="password" id="regPassword" placeholder="Придумайте пароль" onkeypress="if(event.key==='Enter') registerUser()">
+                    </div>
+                    <button onclick="registerUser()" style="margin-bottom: 10px;">✅ Зарегистрироваться</button>
+                    <button onclick="showLogin()" style="background: #6c757d;">⬅️ Назад</button>
+                </div>
+            </div>
+
+            <div id="currentUserInfo" style="display: none;">
+                <div class="admin-panel" style="background: #d4edda;">
+                    <h3>Вы вошли как:</h3>
+                    <p id="currentUsername" style="font-size: 18px; font-weight: bold; color: #155724;"></p>
+                    <button onclick="logout()">🚪 Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для просмотра полного конспекта -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных
+        const SUBJECTS = ['Математика', 'Русский', 'История', 'Биология', 'Физика', 'Химия', 'Английский', 'Другое'];
+        let currentFilter = 'all';
+        let notes = [];
+        let currentUser = null;
+
+        // Загрузка конспектов при открытии страницы
+        function loadNotes() {
+            const stored = localStorage.getItem('notes');
+            notes = stored ? JSON.parse(stored) : [];
+            updateDisplay();
+        }
+
+        // Загрузка текущего пользователя
+        function loadCurrentUser() {
+            const stored = localStorage.getItem('currentUser');
+            currentUser = stored ? JSON.parse(stored) : null;
+            updateUserUI();
+        }
+
+        // Сохранение конспектов
+        function saveNotes() {
+            localStorage.setItem('notes', JSON.stringify(notes));
+            updateDisplay();
+        }
+
+        // Обновление отображения
+        function updateDisplay() {
+            displayNotes();
+            updateStats();
+            if (document.getElementById('admin') && document.getElementById('admin').classList.contains('active')) {
+                displayAdminNotes();
+                displayAdminsList();
+            }
+        }
+
+        // Переключение вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'admin' && !currentUser) {
+                switchTab('login');
+                alert('⚠️ Вы должны войти в аккаунт и быть админом');
+            }
+
+            if (tabName === 'admin') {
+                displayAdminNotes();
+                displayAdminsList();
+            }
+        }
+
+        // Регистрация пользователя
+        function registerUser() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!username || !password) {
+                alert('⚠️ Заполните все поля');
+                return;
+            }
+
+            if (username.length < 3) {
+                alert('⚠️ Имя пользователя должно быть не менее 3 символов');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('⚠️ Пароль должен быть не менее 4 символов');
+                return;
+            }
+
+            // Получаем всех пользователей
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Проверяем, существует ли уже такой пользователь
+            if (users.find(u => u.username === username)) {
+                alert('⚠️ Пользователь с таким именем уже существует');
+                return;
+            }
+
+            // Проверяем админ пароль скрыто
+            const isAdmin = password === 'Fiztech13082002';
+
+            // Добавляем нового пользователя
+            users.push({
+                username: username,
+                password: password,
+                isAdmin: isAdmin
+            });
+
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('✓ Регистрация успешна! Теперь войдите в аккаунт.');
+            showLogin();
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+        }
+
+        // Вход пользователя
+        function loginUser() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) {
+                alert('⚠️ Заполните все поля');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (!user) {
+                alert('⚠️ Неверное имя пользователя или пароль');
+                return;
+            }
+
+            currentUser = {
+                username: username,
+                isAdmin: user.isAdmin
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            updateUserUI();
+            alert('✓ Вы вошли в аккаунт!');
+            switchTab('browse');
+        }
+
+        // Выход пользователя
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUserUI();
+            alert('✓ Вы вышли из аккаунта');
+            switchTab('login');
+        }
+
+        // Обновление UI в зависимости от статуса пользователя
+        function updateUserUI() {
+            const loginBtn = document.getElementById('loginTabBtn');
+            const adminBtn = document.getElementById('adminTabBtn');
+
+            if (currentUser) {
+                loginBtn.textContent = '👤 ' + currentUser.username;
+                document.getElementById('currentUserInfo').style.display = 'block';
+                document.getElementById('currentUsername').textContent = currentUser.username + (currentUser.isAdmin ? ' (Администратор)' : '');
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+
+                if (currentUser.isAdmin && adminBtn) {
+                    adminBtn.style.display = 'block';
+                } else if (adminBtn) {
+                    adminBtn.style.display = 'none';
+                }
+            } else {
+                loginBtn.textContent = '👤 Вход';
+                document.getElementById('currentUserInfo').style.display = 'none';
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                if (adminBtn) {
+                    adminBtn.style.display = 'none';
+                }
+            }
+        }
+
+        // Переключение на форму регистрации
+        function showRegister() {
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.querySelectorAll('#login > .admin-panel').forEach(el => el.style.display = 'none');
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        // Переключение на форму входа
+        function showLogin() {
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.querySelectorAll('#login > .admin-panel').forEach(el => el.style.display = 'block');
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        // Сделать пользователя админом
+        function makeAdmin() {
+            if (!currentUser || !currentUser.isAdmin) {
+                alert('⚠️ Только администраторы могут добавлять других администраторов');
+                return;
+            }
+
+            const username = document.getElementById('newAdminUsername').value.trim();
+            
+            if (!username) {
+                alert('⚠️ Введите имя пользователя');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username);
+
+            if (!user) {
+                alert('⚠️ Пользователь не найден');
+                return;
+            }
+
+            if (user.isAdmin) {
+                alert('⚠️ Этот пользователь уже администратор');
+                return;
+            }
+
+            user.isAdmin = true;
+            localStorage.setItem('users', JSON.stringify(users));
+            document.getElementById('newAdminUsername').value = '';
+            alert('✓ Пользователь ' + username + ' теперь администратор!');
+            displayAdminsList();
+        }
+
+        // Отображение списка администраторов
+        function displayAdminsList() {
+            const container = document.getElementById('adminsList');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const admins = users.filter(u => u.isAdmin);
+
+            if (admins.length === 0) {
+                container.innerHTML = '<p style="color: #666;">Нет администраторов</p>';
+                return;
+            }
+
+            let html = '<ul style="list-style: none; padding: 0;">';
+            admins.forEach(admin => {
+                html += `<li style="background: white; padding: 10px; margin-bottom: 10px; border-radius: 6px;">
+                    👤 <strong>${admin.username}</strong> (Администратор)
+                </li>`;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
+        // Загрузка формы конспекта
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!currentUser) {
+                alert('⚠️ Вы должны войти в аккаунт для загрузки конспектов');
+                switchTab('login');
+                return;
+            }
+
+            const subject = document.getElementById('subject').value;
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+
+            if (!subject || !title || !content) {
+                showError('uploadError', '⚠️ Заполните все поля');
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                subject: subject,
+                title: title,
+                content: content,
+                author: currentUser.username,
+                date: new Date().toLocaleDateString('ru-RU')
+            };
+
+            notes.push(newNote);
+            saveNotes();
+
+            document.getElementById('uploadForm').reset();
+            showSuccess('uploadSuccess');
+
+            setTimeout(() => {
+                switchTab('browse');
+                filterSubject(subject);
+            }, 1500);
+        });
+
+        // Фильтрация по предметам
+        function filterSubject(subject) {
+            currentFilter = subject;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            displayNotes();
+        }
+
+        // Отображение конспектов
+        function displayNotes() {
+            const container = document.getElementById('notesContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+
+            const filtered = currentFilter === 'all'
+                ? notes
+                : notes.filter(note => note.subject === currentFilter);
+
+            if (filtered.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            filtered.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+                card.innerHTML = `
+                    <span class="note-subject">${note.subject}</span>
+                    <div class="note-title">${escapeHtml(note.title)}</div>
+                    <div class="note-author">✍️ ${escapeHtml(note.author)} • ${note.date}</div>
+                    <div class="note-preview">${escapeHtml(note.content.substring(0, 150))}...</div>
+                    <div class="note-actions">
+                        <button class="read-more-btn" onclick="openModal(${note.id})">📖 Читать полностью</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Открытие модального окна
+        function openModal(noteId) {
+            const note = notes.find(n => n.id === noteId);
+            if (!note) return;
+
+            const modal = document.getElementById('noteModal');
+            const body = document.getElementById('modalBody');
+
+            body.innerHTML = `
+                <span class="note-subject">${note.subject}</span>
+                <h2 style="margin: 15px 0;">${escapeHtml(note.title)}</h2>
+                <div class="note-author" style="margin-bottom: 20px;">✍️ ${escapeHtml(note.author)} • ${note.date}</div>
+                <div style="line-height: 1.8; color: #333; white-space: pre-wrap; word-wrap: break-word;">
+                    ${escapeHtml(note.content)}
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('noteModal').classList.remove('active');
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('noteModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Отображение конспектов для администратора
+        function displayAdminNotes() {
+            const container = document.getElementById('adminNotesContainer');
+            container.innerHTML = '';
+
+            if (notes.length === 0) {
+                container.innerHTML = '<p style="color: #666;">Конспектов нет</p>';
+                return;
+            }
+
+            const list = document.createElement('ul');
+            list.className = 'admin-list';
+
+            notes.forEach(note => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(note.title)}</strong>
+                        <br>
+                        <small style="color: #666;">${note.subject} • Автор: ${escapeHtml(note.author)}</small>
+                        <br>
+                        <small style="color: #999;">${note.date}</small>
+                    </div>
+                    <button class="delete-btn" onclick="deleteNote(${note.id})">🗑️ Удалить</button>
+                `;
+                list.appendChild(li);
+            });
+
+            container.appendChild(list);
+        }
+
+        // Удаление конспекта
+        function deleteNote(noteId) {
+            if (!currentUser || !currentUser.isAdmin) {
+                alert('⚠️ Только администраторы могут удалять конспекты');
+                return;
+            }
+
+            if (!confirm('⚠️ Вы уверены, что хотите удалить этот конспект?')) {
+                return;
+            }
+
+            notes = notes.filter(note => note.id !== noteId);
+            saveNotes();
+            alert('✓ Конспект удален!');
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            const statsContainer = document.getElementById('stats');
+            const totalNotes = notes.length;
+            const totalSubjects = new Set(notes.map(n => n.subject)).size;
+            const totalAuthors = new Set(notes.map(n => n.author)).size;
+
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalNotes}</div>
+                    <div class="stat-label">Конспектов загружено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalSubjects}</div>
+                    <div class="stat-label">Предметов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalAuthors}</div>
+                    <div class="stat-label">Авторов</div>
+                </div>
+            `;
+        }
+
+        // Показ сообщения об успехе
+        function showSuccess(elementId) {
+            const element = document.getElementById(elementId);
+            element.classList.add('show');
+            setTimeout(() => {
+                element.classList.remove('show');
+            }, 3000);
+        }
+
+        // Показ сообщения об ошибке
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+            setTimeout(() => {
+                element.classList.remove('show');
+            }, 3000);
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем первого пользователя как админа
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.length === 0) {
+                users.push({
+                    username: 'admin',
+                    password: 'admin',
+                    isAdmin: true
+                });
+                localStorage.setItem('users', JSON.stringify(users));
+                console.log('Первый админ создан: admin / admin');
+            }
+
+            loadNotes();
+            loadCurrentUser();
+
+            // Обработчик кнопки входа
+            const loginBtn = document.getElementById('loginTabBtn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    switchTab('login');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
